@@ -56,6 +56,10 @@ builder.Services.AddHttpClient<IClaudeClient, ClaudeClient>(client =>
     }
 });
 
+// Seed demo players in Development only
+if (builder.Environment.IsDevelopment())
+    builder.Services.AddHostedService<DevDataSeeder>();
+
 // Application services
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IRulesEngine, RulesEngine>();
