@@ -11,7 +11,8 @@ public class ClaudeClient(
     ILogger<ClaudeClient> logger) : IClaudeClient
 {
     private readonly string _model = config["Anthropic:Model"] ?? "claude-haiku-4-5-20251001";
-    private readonly int _maxTokens = int.Parse(config["Anthropic:MaxTokens"] ?? "512");
+    private readonly int _maxTokens =
+        int.TryParse(config["Anthropic:MaxTokens"], out var t) ? t : 512;
     private readonly bool _stubMode =
         string.IsNullOrWhiteSpace(config["Anthropic:ApiKey"]) ||
         config["Anthropic:ApiKey"] == "REPLACE_ME";
@@ -70,6 +71,9 @@ public class ClaudeClient(
 
             var body = await response.Content.ReadFromJsonAsync<ClaudeApiResponse>()
                 ?? throw new InvalidOperationException("Empty response from Claude API");
+
+            if (body.Content.Count == 0)
+                return null;
 
             var jsonText = body.Content[0].Text;
             return JsonSerializer.Deserialize<ClaudeRecommendation>(jsonText, JsonOptions);

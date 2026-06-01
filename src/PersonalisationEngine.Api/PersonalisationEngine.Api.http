@@ -1,6 +1,44 @@
-@PersonalisationEngine.Api_HostAddress = http://localhost:5293
+@base = http://localhost:5080
 
-GET {{PersonalisationEngine.Api_HostAddress}}/weatherforecast/
+### List all players
+GET {{base}}/api/players
 Accept: application/json
+
+###
+
+### Get player by ID
+GET {{base}}/api/players/P001
+Accept: application/json
+
+###
+
+### Generate recommendation for a safe player
+POST {{base}}/api/recommendations/P001
+Accept: application/json
+
+###
+
+### Generate recommendation for a blocked player (high risk)
+POST {{base}}/api/recommendations/P005
+Accept: application/json
+
+###
+
+### Create a new player
+POST {{base}}/api/players
+Content-Type: application/json
+
+{
+  "playerId": "TEST01",
+  "daysSinceJoined": 30,
+  "mostBetSport": "Tennis",
+  "favouriteTeam": null,
+  "mostBetType": "Match Winner",
+  "averageStake": 8.00,
+  "lastLoginDaysAgo": 2,
+  "riskLevel": "Low",
+  "isSelfExcluded": false,
+  "isInCoolingOff": false
+}
 
 ###

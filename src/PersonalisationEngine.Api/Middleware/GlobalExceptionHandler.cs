@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace PersonalisationEngine.Api.Middleware;
 
 public class GlobalExceptionHandler(RequestDelegate next, ILogger<GlobalExceptionHandler> logger)
@@ -26,7 +28,7 @@ public class GlobalExceptionHandler(RequestDelegate next, ILogger<GlobalExceptio
         };
         ctx.Response.StatusCode = status;
         ctx.Response.ContentType = "application/json";
-        return ctx.Response.WriteAsync($"{{\"error\":\"{message}\"}}");
+        return ctx.Response.WriteAsync(JsonSerializer.Serialize(new { error = message }));
     }
 }
 
