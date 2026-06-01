@@ -18,6 +18,6 @@ public sealed class StubClaudeClient : IClaudeClient
     );
 
     public Task<ClaudeRecommendation?> GenerateRecommendationAsync(
-        string playerJson, IReadOnlyList<string> safeOptions) =>
+        string playerJson, IReadOnlyList<string> safeOptions, CancellationToken ct = default) =>
         Task.FromResult<ClaudeRecommendation?>(DefaultResponse);
 }

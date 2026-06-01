@@ -145,6 +145,23 @@ public class ClaudeClientTests
         Assert.Null(result);
     }
 
+    // Live mode — request cancelled via CancellationToken
+
+    [Fact]
+    public async Task LiveMode_CancelledRequest_ReturnsNull()
+    {
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        var handler = new MockHttpHandler(HttpStatusCode.OK, "{}");
+        var http = new HttpClient(handler) { BaseAddress = new Uri("https://api.anthropic.com") };
+        var client = BuildClient(http);
+
+        var result = await client.GenerateRecommendationAsync("{}", [], cts.Token);
+
+        Assert.Null(result);
+    }
+
     // --- Helpers ---
 
     private sealed class MockHttpHandler(HttpStatusCode status, string content)

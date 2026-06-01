@@ -24,7 +24,8 @@ public class ClaudeClient(
 
     public async Task<ClaudeRecommendation?> GenerateRecommendationAsync(
         string playerJson,
-        IReadOnlyList<string> safeOptions)
+        IReadOnlyList<string> safeOptions,
+        CancellationToken ct = default)
     {
         if (_stubMode)
         {
@@ -64,12 +65,20 @@ public class ClaudeClient(
             messages = new[] { new { role = "user", content = userPrompt } }
         };
 
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         try
         {
-            var response = await http.PostAsJsonAsync("/v1/messages", request);
-            response.EnsureSuccessStatusCode();
+            var response = await http.PostAsJsonAsync("/v1/messages", request, ct);
+            sw.Stop();
 
-            var body = await response.Content.ReadFromJsonAsync<ClaudeApiResponse>()
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning("Claude API returned {StatusCode} after {ElapsedMs}ms — returning null",
+                    (int)response.StatusCode, sw.ElapsedMilliseconds);
+                return null;
+            }
+
+            var body = await response.Content.ReadFromJsonAsync<ClaudeApiResponse>(cancellationToken: ct)
                 ?? throw new InvalidOperationException("Empty response from Claude API");
 
             if (body.Content.Count == 0)
@@ -78,9 +87,16 @@ public class ClaudeClient(
             var jsonText = body.Content[0].Text;
             return JsonSerializer.Deserialize<ClaudeRecommendation>(jsonText, JsonOptions);
         }
+        catch (OperationCanceledException)
+        {
+            logger.LogWarning("Claude API call cancelled after {ElapsedMs}ms", sw.ElapsedMilliseconds);
+            return null;
+        }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Claude API call failed — returning null for graceful degradation");
+            sw.Stop();
+            logger.LogWarning(ex, "Claude API call failed after {ElapsedMs}ms — returning null for graceful degradation",
+                sw.ElapsedMilliseconds);
             return null;
         }
     }

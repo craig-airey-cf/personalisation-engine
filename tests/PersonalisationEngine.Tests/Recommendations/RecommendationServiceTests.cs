@@ -45,7 +45,7 @@ public class RecommendationServiceTests : IDisposable
         _rulesEngine.Setup(r => r.Evaluate(It.IsAny<Player>()))
             .Returns(new RulesResult(true, null, ["Sport: Football"]));
 
-        _claude.Setup(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>()))
+        _claude.Setup(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ClaudeRecommendation(
                 "Scotland are back in action",
                 "Check your favourite team's latest markets.",
@@ -58,7 +58,7 @@ public class RecommendationServiceTests : IDisposable
         Assert.True(result.SafeToShow);
         Assert.Equal("Scotland are back in action", result.Headline);
         Assert.Equal("Content", result.RecommendationType);
-        _claude.Verify(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>()), Times.Once);
+        _claude.Verify(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class RecommendationServiceTests : IDisposable
 
         Assert.False(result.SafeToShow);
         Assert.Equal("High risk level", result.BlockReason);
-        _claude.Verify(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>()), Times.Never);
+        _claude.Verify(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class RecommendationServiceTests : IDisposable
         _rulesEngine.Setup(r => r.Evaluate(It.IsAny<Player>()))
             .Returns(new RulesResult(true, null, ["Sport: Football"]));
 
-        _claude.Setup(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>()))
+        _claude.Setup(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((ClaudeRecommendation?)null);
 
         var result = await CreateService().GenerateAsync("TEST01");
@@ -106,7 +106,7 @@ public class RecommendationServiceTests : IDisposable
         _rulesEngine.Setup(r => r.Evaluate(It.IsAny<Player>()))
             .Returns(new RulesResult(true, null, ["Sport: Football"]));
 
-        _claude.Setup(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>()))
+        _claude.Setup(c => c.GenerateRecommendationAsync(It.IsAny<string>(), It.IsAny<IReadOnlyList<string>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ClaudeRecommendation("Headline", "Msg", "Market", "Reason", true));
 
         await CreateService().GenerateAsync("TEST01");

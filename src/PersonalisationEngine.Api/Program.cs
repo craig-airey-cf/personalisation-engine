@@ -48,6 +48,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddHttpClient<IClaudeClient, ClaudeClient>(client =>
 {
     client.BaseAddress = new Uri("https://api.anthropic.com");
+    client.Timeout = TimeSpan.FromSeconds(30);
     var apiKey = builder.Configuration["Anthropic:ApiKey"] ?? "";
     if (!string.IsNullOrWhiteSpace(apiKey) && apiKey != "REPLACE_ME")
     {

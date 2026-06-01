@@ -4,5 +4,5 @@ namespace PersonalisationEngine.Api.Services;
 
 public interface IRecommendationService
 {
-    Task<RecommendationResponse> GenerateAsync(string playerId);
+    Task<RecommendationResponse> GenerateAsync(string playerId, CancellationToken ct = default);
 }
