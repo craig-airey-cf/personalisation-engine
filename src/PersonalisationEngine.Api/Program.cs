@@ -89,9 +89,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("ViteDev");
 }
-
-app.UseCors("ViteDev");
 app.MapControllers();
 
 app.Run();
