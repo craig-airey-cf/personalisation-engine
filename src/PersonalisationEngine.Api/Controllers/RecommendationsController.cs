@@ -8,6 +8,6 @@ namespace PersonalisationEngine.Api.Controllers;
 public class RecommendationsController(IRecommendationService recommendationService) : ControllerBase
 {
     [HttpPost("{playerId}")]
-    public async Task<IActionResult> Generate(string playerId) =>
-        Ok(await recommendationService.GenerateAsync(playerId));
+    public async Task<IActionResult> Generate(string playerId, CancellationToken ct) =>
+        Ok(await recommendationService.GenerateAsync(playerId, ct));
 }

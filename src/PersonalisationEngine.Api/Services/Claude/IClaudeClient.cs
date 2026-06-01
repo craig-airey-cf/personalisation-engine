@@ -6,5 +6,6 @@ public interface IClaudeClient
 {
     Task<ClaudeRecommendation?> GenerateRecommendationAsync(
         string playerJson,
-        IReadOnlyList<string> safeOptions);
+        IReadOnlyList<string> safeOptions,
+        CancellationToken ct = default);
 }

@@ -20,10 +20,10 @@ public class RecommendationService(
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public async Task<RecommendationResponse> GenerateAsync(string playerId)
+    public async Task<RecommendationResponse> GenerateAsync(string playerId, CancellationToken ct = default)
     {
         var player = await db.Players.AsNoTracking()
-            .SingleOrDefaultAsync(p => p.PlayerId == playerId)
+            .SingleOrDefaultAsync(p => p.PlayerId == playerId, ct)
             ?? throw new NotFoundException($"Player '{playerId}' not found");
 
         var rules = rulesEngine.Evaluate(player);
@@ -40,7 +40,7 @@ public class RecommendationService(
         {
             logger.LogInformation("Player {PlayerId} passed guardrails — calling Claude", playerId);
             var playerJson = JsonSerializer.Serialize(player, SerializerOptions);
-            var claude = await claudeClient.GenerateRecommendationAsync(playerJson, rules.SafeOptions);
+            var claude = await claudeClient.GenerateRecommendationAsync(playerJson, rules.SafeOptions, ct);
 
             if (claude is not null)
             {
@@ -61,7 +61,7 @@ public class RecommendationService(
         }
 
         db.Recommendations.Add(recommendation);
-        await db.SaveChangesAsync();
+        await db.SaveChangesAsync(ct);
 
         return ToResponse(recommendation);
     }
