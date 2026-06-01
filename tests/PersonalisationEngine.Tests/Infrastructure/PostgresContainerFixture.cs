@@ -8,8 +8,7 @@ namespace PersonalisationEngine.Tests.Infrastructure;
 /// </summary>
 public sealed class PostgresContainerFixture : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
-        .WithImage("postgres:16-alpine")
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder("postgres:16-alpine")
         .WithDatabase("pe_test")
         .WithUsername("pe_test")
         .WithPassword("pe_test")
