@@ -6,6 +6,9 @@
         <Configuration>
           <ExcludeByFile>**/Migrations/**/*.cs</ExcludeByFile>
           <ExcludeByAttribute>GeneratedCodeAttribute,ExcludeFromCodeCoverageAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+          <Threshold>80</Threshold>
+          <ThresholdType>line,branch</ThresholdType>
+          <ThresholdStat>Total</ThresholdStat>
         </Configuration>
       </DataCollector>
     </DataCollectors>
