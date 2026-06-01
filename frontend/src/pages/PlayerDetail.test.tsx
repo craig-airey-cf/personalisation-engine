@@ -1,50 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import PlayerDetail from './PlayerDetail';
+import { mockPlayer, safeRecommendation, blockedRecommendation } from '../test/fixtures';
 import * as client from '../api/client';
-
-const mockPlayer = {
-  id: 1,
-  playerId: 'P001',
-  daysSinceJoined: 100,
-  mostBetSport: 'Football',
-  favouriteTeam: 'Scotland',
-  mostBetType: 'Match Winner',
-  averageStake: 10.0,
-  lastLoginDaysAgo: 1,
-  riskLevel: 'Low' as const,
-  isSelfExcluded: false,
-  isInCoolingOff: false,
-  createdAt: '2025-01-01T00:00:00Z',
-};
-
-const safeRecommendation = {
-  id: 1,
-  playerId: 'P001',
-  safeToShow: true,
-  blockReason: null,
-  safeOptions: ['Football markets', 'Scotland specials'],
-  recommendationType: 'Market',
-  headline: 'Great markets today',
-  message: 'Based on your history we picked these.',
-  reason: 'Low risk, active player',
-  createdAt: '2025-01-01T00:00:00Z',
-};
-
-const blockedRecommendation = {
-  id: 2,
-  playerId: 'P005',
-  safeToShow: false,
-  blockReason: 'High risk player',
-  safeOptions: [],
-  recommendationType: null,
-  headline: null,
-  message: null,
-  reason: null,
-  createdAt: '2025-01-01T00:00:00Z',
-};
+import PlayerDetail from './PlayerDetail';
 
 function renderDetail(playerId = 'P001') {
   return render(

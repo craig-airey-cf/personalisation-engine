@@ -1,33 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mockPlayer, safeRecommendation } from '../test/fixtures';
 import { api } from './client';
-
-const mockPlayer = {
-  id: 1,
-  playerId: 'P001',
-  daysSinceJoined: 100,
-  mostBetSport: 'Football',
-  favouriteTeam: 'Scotland',
-  mostBetType: 'Match Winner',
-  averageStake: 10.0,
-  lastLoginDaysAgo: 1,
-  riskLevel: 'Low' as const,
-  isSelfExcluded: false,
-  isInCoolingOff: false,
-  createdAt: '2025-01-01T00:00:00Z',
-};
-
-const mockRecommendation = {
-  id: 1,
-  playerId: 'P001',
-  safeToShow: true,
-  blockReason: null,
-  safeOptions: ['Football markets', 'Scotland specials'],
-  recommendationType: 'Market',
-  headline: 'Check out today\'s markets',
-  message: 'Great markets available.',
-  reason: 'Based on your betting history',
-  createdAt: '2025-01-01T00:00:00Z',
-};
 
 function mockFetch(body: unknown, ok = true, status = 200) {
   return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
@@ -92,13 +64,13 @@ describe('api.getPlayer', () => {
 
 describe('api.generateRecommendation', () => {
   it('returns a recommendation on success', async () => {
-    mockFetch(mockRecommendation);
+    mockFetch(safeRecommendation);
     const result = await api.generateRecommendation('P001');
-    expect(result).toEqual(mockRecommendation);
+    expect(result).toEqual(safeRecommendation);
   });
 
   it('calls POST to the correct endpoint', async () => {
-    const spy = mockFetch(mockRecommendation);
+    const spy = mockFetch(safeRecommendation);
     await api.generateRecommendation('P001');
     expect(spy).toHaveBeenCalledWith('/api/recommendations/P001', { method: 'POST' });
   });

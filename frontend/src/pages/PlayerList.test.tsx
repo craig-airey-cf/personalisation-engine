@@ -1,40 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import PlayerList from './PlayerList';
+import { mockPlayer, mockPlayer2 } from '../test/fixtures';
 import * as client from '../api/client';
-
-const mockPlayers = [
-  {
-    id: 1,
-    playerId: 'P001',
-    daysSinceJoined: 100,
-    mostBetSport: 'Football',
-    favouriteTeam: 'Scotland',
-    mostBetType: 'Match Winner',
-    averageStake: 10.5,
-    lastLoginDaysAgo: 1,
-    riskLevel: 'Low' as const,
-    isSelfExcluded: false,
-    isInCoolingOff: false,
-    createdAt: '2025-01-01T00:00:00Z',
-  },
-  {
-    id: 2,
-    playerId: 'P002',
-    daysSinceJoined: 200,
-    mostBetSport: 'Tennis',
-    favouriteTeam: null,
-    mostBetType: 'Set Betting',
-    averageStake: 5.0,
-    lastLoginDaysAgo: 3,
-    riskLevel: 'Medium' as const,
-    isSelfExcluded: false,
-    isInCoolingOff: true,
-    createdAt: '2025-01-02T00:00:00Z',
-  },
-];
+import PlayerList from './PlayerList';
 
 function renderPlayerList() {
   return render(
@@ -53,13 +22,13 @@ beforeEach(() => {
 
 describe('PlayerList', () => {
   it('renders the page heading', async () => {
-    vi.spyOn(client.api, 'getPlayers').mockResolvedValue(mockPlayers);
+    vi.spyOn(client.api, 'getPlayers').mockResolvedValue([mockPlayer, mockPlayer2]);
     renderPlayerList();
     expect(screen.getByText('Personalisation Engine — Admin')).toBeInTheDocument();
   });
 
   it('renders a row for each player', async () => {
-    vi.spyOn(client.api, 'getPlayers').mockResolvedValue(mockPlayers);
+    vi.spyOn(client.api, 'getPlayers').mockResolvedValue([mockPlayer, mockPlayer2]);
     renderPlayerList();
     await waitFor(() => {
       expect(screen.getByText('P001')).toBeInTheDocument();
@@ -68,16 +37,16 @@ describe('PlayerList', () => {
   });
 
   it('renders player sport and formatted stake', async () => {
-    vi.spyOn(client.api, 'getPlayers').mockResolvedValue(mockPlayers);
+    vi.spyOn(client.api, 'getPlayers').mockResolvedValue([mockPlayer, mockPlayer2]);
     renderPlayerList();
     await waitFor(() => {
       expect(screen.getByText('Football')).toBeInTheDocument();
-      expect(screen.getByText('£10.50')).toBeInTheDocument();
+      expect(screen.getByText('£10.00')).toBeInTheDocument();
     });
   });
 
   it('renders — for null favouriteTeam', async () => {
-    vi.spyOn(client.api, 'getPlayers').mockResolvedValue(mockPlayers);
+    vi.spyOn(client.api, 'getPlayers').mockResolvedValue([mockPlayer, mockPlayer2]);
     renderPlayerList();
     await waitFor(() => {
       expect(screen.getByText('—')).toBeInTheDocument();
@@ -93,7 +62,7 @@ describe('PlayerList', () => {
   });
 
   it('navigates to player detail on row click', async () => {
-    vi.spyOn(client.api, 'getPlayers').mockResolvedValue(mockPlayers);
+    vi.spyOn(client.api, 'getPlayers').mockResolvedValue([mockPlayer, mockPlayer2]);
     const { container } = renderPlayerList();
     await waitFor(() => screen.getByText('P001'));
 

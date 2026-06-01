@@ -27,13 +27,17 @@ namespace PersonalisationEngine.Api.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<int>(
-                name: "RiskLevel",
-                table: "Players",
-                type: "integer",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "text");
+            // PostgreSQL requires an explicit USING clause to cast text back to integer.
+            migrationBuilder.Sql("""
+                ALTER TABLE "Players"
+                ALTER COLUMN "RiskLevel" TYPE integer
+                USING CASE "RiskLevel"
+                    WHEN 'Low'    THEN 0
+                    WHEN 'Medium' THEN 1
+                    WHEN 'High'   THEN 2
+                    ELSE 0
+                END;
+                """);
         }
     }
 }
