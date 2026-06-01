@@ -61,6 +61,12 @@ builder.Services.AddHttpClient<IClaudeClient, ClaudeClient>(client =>
 if (builder.Environment.IsDevelopment())
     builder.Services.AddHostedService<DevDataSeeder>();
 
+// API key authentication — validates X-Api-Key header against Auth:ApiKey config
+builder.Services.AddAuthentication(ApiKeyAuthenticationHandler.SchemeName)
+    .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions,
+               ApiKeyAuthenticationHandler>(ApiKeyAuthenticationHandler.SchemeName, _ => { });
+builder.Services.AddAuthorization();
+
 // Application services
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IRulesEngine, RulesEngine>();
@@ -97,6 +103,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseCors("ViteDev");
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();

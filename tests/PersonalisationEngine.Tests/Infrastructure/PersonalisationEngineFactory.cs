@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PersonalisationEngine.Api.Data;
 using PersonalisationEngine.Api.Services.Claude;
@@ -14,9 +15,14 @@ namespace PersonalisationEngine.Tests.Infrastructure;
 public sealed class PersonalisationEngineFactory(string connectionString)
     : WebApplicationFactory<Program>
 {
+    public const string TestApiKey = "test-api-key";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
+
+        builder.ConfigureAppConfiguration(cfg =>
+            cfg.AddInMemoryCollection(new Dictionary<string, string?> { ["Auth:ApiKey"] = TestApiKey }));
 
         builder.ConfigureServices(services =>
         {
