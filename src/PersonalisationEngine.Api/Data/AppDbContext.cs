@@ -17,6 +17,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(p => p.PlayerId).IsUnique();
             e.Property(p => p.AverageStake).HasColumnType("decimal(10,2)");
             e.Property(p => p.CreatedAt).HasDefaultValueSql("NOW()");
+            e.Property(p => p.RiskLevel).HasConversion<string>();
         });
 
         modelBuilder.Entity<Recommendation>(e =>
