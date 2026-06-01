@@ -17,6 +17,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         Factory = new PersonalisationEngineFactory(db.ConnectionString);
         Factory.MigrateDatabase();
         Client = Factory.CreateClient();
+        Client.DefaultRequestHeaders.Add("X-Api-Key", PersonalisationEngineFactory.TestApiKey);
     }
 
     public async Task InitializeAsync()

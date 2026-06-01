@@ -120,6 +120,17 @@ public sealed class RecommendationsApiTests(PostgresContainerFixture db) : Integ
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    // Unauthenticated request
+
+    [Fact]
+    public async Task Generate_MissingApiKey_Returns401()
+    {
+        using var unauthClient = Factory.CreateClient();
+        var response = await unauthClient.PostAsync("/api/recommendations/P001", null);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
     // Multiple recommendations for the same player are all stored
 
     [Fact]
