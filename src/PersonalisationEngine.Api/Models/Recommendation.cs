@@ -11,5 +11,6 @@ public class Recommendation
     public string? Headline { get; set; }
     public string? Message { get; set; }
     public string? Reason { get; set; }
+    public string? SafeOptionsJson { get; set; }
     public DateTime CreatedAt { get; set; }
 }

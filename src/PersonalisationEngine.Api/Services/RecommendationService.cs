@@ -32,7 +32,8 @@ public class RecommendationService(
         {
             PlayerId = player.PlayerId,
             SafeToShow = rules.SafeToShow,
-            BlockReason = rules.BlockReason
+            BlockReason = rules.BlockReason,
+            SafeOptionsJson = JsonSerializer.Serialize(rules.SafeOptions)
         };
 
         if (rules.SafeToShow)
@@ -62,20 +63,25 @@ public class RecommendationService(
         db.Recommendations.Add(recommendation);
         await db.SaveChangesAsync();
 
-        return ToResponse(recommendation, rules.SafeOptions);
+        return ToResponse(recommendation);
     }
 
-    private static RecommendationResponse ToResponse(
-        Recommendation r, IReadOnlyList<string> safeOptions) => new(
-        r.Id,
-        r.PlayerId,
-        r.SafeToShow,
-        r.BlockReason,
-        safeOptions,
-        r.RecommendationType,
-        r.Headline,
-        r.Message,
-        r.Reason,
-        r.CreatedAt
-    );
+    private static RecommendationResponse ToResponse(Recommendation r)
+    {
+        var safeOptions = r.SafeOptionsJson is not null
+            ? JsonSerializer.Deserialize<IReadOnlyList<string>>(r.SafeOptionsJson) ?? []
+            : (IReadOnlyList<string>)[];
+        return new(
+            r.Id,
+            r.PlayerId,
+            r.SafeToShow,
+            r.BlockReason,
+            safeOptions,
+            r.RecommendationType,
+            r.Headline,
+            r.Message,
+            r.Reason,
+            r.CreatedAt
+        );
+    }
 }
