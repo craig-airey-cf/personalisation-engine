@@ -76,9 +76,10 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Auto-migrate on startup
-using (var scope = app.Services.CreateScope())
+// Migrate on startup only when explicitly enabled (Development default: true, all others: false)
+if (app.Configuration.GetValue<bool>("RunMigrationsOnStartup"))
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
 }
