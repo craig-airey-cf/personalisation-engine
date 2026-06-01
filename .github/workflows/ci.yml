@@ -13,11 +13,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          show-progress: false
 
       - name: Set up .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Restore dependencies
         run: dotnet restore
@@ -39,3 +43,5 @@ jobs:
         with:
           name: test-results
           path: ./test-results/*.trx
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
