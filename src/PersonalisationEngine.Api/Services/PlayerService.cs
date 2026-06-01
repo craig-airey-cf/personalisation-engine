@@ -35,6 +35,10 @@ public class PlayerService(AppDbContext db) : IPlayerService
 
     public async Task<PlayerResponse> UpdateAsync(string playerId, PlayerRequest request)
     {
+        if (request.PlayerId != playerId)
+            throw new BadRequestException(
+                $"PlayerId in body '{request.PlayerId}' does not match URL '{playerId}'");
+
         var player = await db.Players.SingleOrDefaultAsync(p => p.PlayerId == playerId)
             ?? throw new NotFoundException($"Player '{playerId}' not found");
 

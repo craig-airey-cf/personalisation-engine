@@ -111,6 +111,18 @@ public sealed class PlayersApiTests(PostgresContainerFixture db) : IntegrationTe
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    [Fact]
+    public async Task Update_PlayerIdMismatch_Returns400()
+    {
+        var request = new PlayerRequest(
+            "P999", 200, "Rugby", null, "Handicap",
+            20m, 1, Api.Models.RiskLevel.Low, false, false);
+
+        var response = await Client.PutAsJsonAsync("/api/players/P001", request);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     // DELETE /api/players/{playerId}
 
     [Fact]
