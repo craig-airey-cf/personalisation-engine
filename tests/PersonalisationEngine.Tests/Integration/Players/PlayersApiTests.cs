@@ -143,5 +143,27 @@ public sealed class PlayersApiTests(PostgresContainerFixture db) : IntegrationTe
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    [Fact]
+    public async Task Create_ConcurrentDuplicatePlayerId_Returns409NotAnd500()
+    {
+        // Bypass the application-level AnyAsync guard by racing two requests simultaneously.
+        // The unique DB constraint should catch the duplicate and the middleware must map it to 409.
+        var request = new PlayerRequest(
+            "RACE01", 10, "Tennis", null, "Single",
+            5m, 1, Api.Models.RiskLevel.Low, false, false);
+
+        var tasks = Enumerable.Range(0, 5)
+            .Select(_ => Client.PostAsJsonAsync("/api/players", request))
+            .ToList();
+
+        var responses = await Task.WhenAll(tasks);
+
+        Assert.Single(responses, r => r.StatusCode == HttpStatusCode.Created);
+        Assert.All(responses.Where(r => r.StatusCode != HttpStatusCode.Created),
+            r => Assert.True(
+                r.StatusCode == HttpStatusCode.Conflict,
+                $"Expected 409 Conflict but got {(int)r.StatusCode}"));
+    }
+
     private sealed record ErrorResponse(string Error);
 }
