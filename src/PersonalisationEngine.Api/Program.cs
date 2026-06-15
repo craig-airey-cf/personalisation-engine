@@ -1,7 +1,9 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using PersonalisationEngine.Api.Data;
+using PersonalisationEngine.Api.Grpc;
 using PersonalisationEngine.Api.Middleware;
 using PersonalisationEngine.Api.Services;
 using PersonalisationEngine.Api.Services.Claude;
@@ -13,6 +15,14 @@ Log.Logger = new LoggerConfiguration()
     .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(5080, o => o.Protocols = HttpProtocols.Http1);
+    options.ListenLocalhost(5081, o => o.Protocols = HttpProtocols.Http2);
+});
+
+builder.Services.AddGrpc();
 builder.Host.UseSerilog((ctx, services, config) =>
     config.ReadFrom.Configuration(ctx.Configuration)
           .ReadFrom.Services(services)
@@ -106,6 +116,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapGrpcService<EventIngestService>();
 app.MapControllers();
 
 app.Run();

@@ -5,6 +5,11 @@ obj/
 *.suo
 .vs/
 .vscode/
+TestResults/
+*.coverage
+
+## IDE
+.idea/
 
 ## Env / secrets
 .env.local
